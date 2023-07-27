@@ -28,11 +28,31 @@ function Footer() {
             <FooterButton title="Snapshot" />
           </div>
           <div className="flex items-center gap-x-[24px] ">
-            <img src={discordLogo} alt="" className="h-[17px] w-[23px]" />
-            <img src={twitterLogo} alt="" className="h-[19px] w-[23px]" />
-            <img src={dmLogo} alt="" className="h-[19px] w-[23px]" />
-            <img src={githubLogo} alt="" className="h-[20px] w-[21px]" />
-            <img src={otherLogo} alt="" className="h-[16px] w-[28px]" />
+            <img
+              src={discordLogo}
+              alt=""
+              className="h-[17px] w-[23px] cursor-pointer"
+            />
+            <img
+              src={twitterLogo}
+              alt=""
+              className="h-[19px] w-[23px] cursor-pointer"
+            />
+            <img
+              src={dmLogo}
+              alt=""
+              className="h-[19px] w-[23px] cursor-pointer"
+            />
+            <img
+              src={githubLogo}
+              alt=""
+              className="h-[20px] w-[21px] cursor-pointer"
+            />
+            <img
+              src={otherLogo}
+              alt=""
+              className="h-[16px] w-[28px] cursor-pointer"
+            />
           </div>
         </div>
         <div className="flex  w-full items-start gap-x-[84px] h-full mt-[68px] mb-[55px]">
@@ -86,11 +106,11 @@ function Footer() {
           </div>
         </div>
         <div className="flex  w-full items-center justify-between ">
-          <p className="typo-footer-bottom-right text-[#ABB7BD] mr-[17px]">
+          <p className="typo-footer-bottom-right text-[#ABB7BD] ">
             © 2023 Sperax Inc. All rights reserved.
           </p>
           <div className="flex items-center typo-footer-arb-text">
-            <p>Terms of Service</p>{" "}
+            <p className="mr-[15px]">Terms of Service</p>{" "}
             <p className="flex items-center gap-x-[12px]">
               {" "}
               <span className="rounded-[50%] h-[6px] w-[6px] bg-[#C8CFD3]" />

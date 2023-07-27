@@ -67,7 +67,7 @@
 }
 
 .typo-footer-arb-text {
-   font-family: "IBM Plex Sans", sans-serif !important;
+  font-family: "IBM Plex Sans", sans-serif !important;
   font-size: 13px;
   font-style: normal;
   font-weight: 700;
@@ -80,4 +80,11 @@
   font-style: normal;
   font-weight: 400;
   line-height: 20px; /* 142.857% */
+}
+
+.typo-input-error {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 12px; /* 142.857% */
 }
