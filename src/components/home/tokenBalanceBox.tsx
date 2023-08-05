@@ -1,3 +1,4 @@
+import useTokenTransfer from "../../hooks/useTokenTransfer";
 import { IUserData } from "../../interfaces/userData.interface";
 import Button from "../common/button";
 import InputField from "../common/inputField";
@@ -12,6 +13,8 @@ function TokenBalanceBox({
   setUserData: React.Dispatch<React.SetStateAction<IUserData>>;
   className?: string;
 }) {
+  const { getErc20TokenBalance } = useTokenTransfer();
+
   return (
     <div className={`max-w-[540px] w-full mx-auto  ${className}`}>
       <h4 className="typo-heading text-[#000] text-center">
@@ -31,7 +34,10 @@ function TokenBalanceBox({
           }
         />
         <div>
-          <Button title="Submit" onClick={() => {}} isDisabled />
+          <Button
+            title="Submit"
+            onClick={() => getErc20TokenBalance(userData.senderAddress)}
+          />
         </div>
       </form>
     </div>
