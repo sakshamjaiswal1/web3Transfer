@@ -83,8 +83,15 @@
 }
 
 .typo-input-error {
-  font-size: 12px;
+  font-size: 14px;
   font-style: normal;
   font-weight: 300;
   line-height: 12px; /* 142.857% */
+}
+
+.typo-token-balance {
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 28px;
 }

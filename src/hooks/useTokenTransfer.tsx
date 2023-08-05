@@ -1,26 +1,35 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
 import Web3 from "web3";
-import  erc20TokenAbi from "../constants/erc20TokenAbi";
+import ERC20Abi from "../constants/ERC20Abi.json";
+import { getEtherToWei, getWeiToEther } from "../utils/balanceConverter";
+import { toast } from "react-toastify";
+import { addressShrinker } from "../utils/addressShrinker";
 
 function useTokenTransfer() {
   const [isConnectLoading, setIsConnectLoading] = useState<boolean>(false);
   const [currentWalletAddress, setCurrentWalletAddress] = useState<string>("");
-  //   const handleFetchBalance = () => {
-
-  //   };
+  const [tokenBalance, setTokenBalance] = useState<{
+    value: number;
+    isDisplay: boolean;
+    isLoading: boolean;
+  }>({
+    value: 0,
+    isDisplay: false,
+    isLoading: false,
+  });
+  const [isTransferLoading, setIsTransferLoading] = useState<boolean>(false);
 
   const { ethereum } = window;
 
   const checkIfWalletIsConnected = async () => {
     try {
       if (!ethereum) {
-        return alert("Please Install Metamask");
+        return toast.error("Plase install a web3 wallet");
       }
 
       const accounts = await ethereum.request({ method: "eth_accounts" });
       if (accounts.length) {
-        console.log(accounts);
       } else {
         console.log("no accounts found");
       }
@@ -33,40 +42,79 @@ function useTokenTransfer() {
   const connectWallet = async () => {
     try {
       if (!ethereum) {
-        return alert("Please Install Metamask");
+        return toast.error("Plase install a web3 wallet");
       }
       setIsConnectLoading(true);
       const accounts = await ethereum.request({
         method: "eth_requestAccounts",
       });
       setCurrentWalletAddress(accounts[0]);
+
       setIsConnectLoading(false);
-      console.log(accounts[0], "ddd");
     } catch (err) {
       setIsConnectLoading(false);
       console.log(err);
+
       throw new Error("No etherium object");
     }
   };
-
   const getErc20TokenBalance = async (ethContractAddress: string) => {
-    console.log(ethContractAddress);
     try {
-      const web3 = new Web3("http://localhost:8545");
-      const tokenInst = new web3.eth.Contract(
-        erc20TokenAbi,
-        ethContractAddress
-      );
-      const balance = await tokenInst.methods.balanceOf().call();
-      console.log(balance);
+      if (window.ethereum) {
+        const web3 = new Web3(window.ethereum);
+        const tokenInst = new web3.eth.Contract(
+          ERC20Abi as any,
+          ethContractAddress
+        );
+        setTokenBalance({ ...tokenBalance, isLoading: true });
+        const balance = await tokenInst.methods
+          .balanceOf(currentWalletAddress)
+          .call();
+
+        setTokenBalance({
+          value: getWeiToEther(Number(balance)),
+          isDisplay: true,
+          isLoading: false,
+        });
+      }
     } catch (err) {
       console.log(err);
+      toast.error("Something went wrong! Plese try again");
+      setTokenBalance({
+        value: 0,
+        isDisplay: false,
+        isLoading: false,
+      });
     }
   };
 
-  useEffect(() => {
-    connectWallet();
-  }, []);
+  const handleTransferToken = async (
+    ethContractAddress: string,
+    recieverAddress: string,
+    amount: number
+  ) => {
+    try {
+      if (window.ethereum) {
+        const web3 = new Web3(window.ethereum);
+        const tokenInst = new web3.eth.Contract(
+          ERC20Abi as any,
+          ethContractAddress
+        );
+        setIsTransferLoading(true);
+        await tokenInst.methods
+          .transfer(recieverAddress, getEtherToWei(amount))
+          .send({ from: currentWalletAddress });
+      }
+      setIsTransferLoading(false);
+      toast.success(
+        `${amount} sent successfull to ${addressShrinker(recieverAddress)}`
+      );
+    } catch (err) {
+      toast.error("User Permisson Denied");
+      console.log(err);
+      setIsTransferLoading(false);
+    }
+  };
 
   return {
     checkIfWalletIsConnected,
@@ -74,75 +122,12 @@ function useTokenTransfer() {
     isConnectLoading,
     getErc20TokenBalance,
     currentWalletAddress,
+    tokenBalance,
+    handleTransferToken,
+    isTransferLoading,
   };
 }
 
 export default useTokenTransfer;
-// import React, { useState } from "react";
-// import Web3 from "web3";
-// import TokenContractABI from "./TokenContractABI.json"; // Replace with the actual ERC20 contract ABI
-
-// const TransferTokens = () => {
-//   const [recipientAddress, setRecipientAddress] = useState("");
-//   const [amount, setAmount] = useState("");
-//   const [errorMessage, setErrorMessage] = useState("");
-
-//   const handleTransfer = async () => {
-//     try {
-//       // Connect to Ethereum network using Metamask
-//       if (window.ethereum) {
-//         await window.ethereum.request({ method: "eth_requestAccounts" });
-//         const web3 = new Web3(window.ethereum);
-//         const contractAddress = "YOUR_ERC20_CONTRACT_ADDRESS"; // Replace with the actual ERC20 contract address
-//         const tokenContract = new web3.eth.Contract(TokenContractABI, contractAddress);
-
-//         // Get the user's Ethereum address
-//         const accounts = await web3.eth.getAccounts();
-//         const userAddress = accounts[0];
-
-//         // Check user's token balance
-//         const balance = await tokenContract.methods.balanceOf(userAddress).call();
-
-//         if (Number(amount) <= 0) {
-//           setErrorMessage("Please enter a valid amount.");
-//           return;
-//         }
-
-//         if (Number(amount) > Number(balance)) {
-//           setErrorMessage("Insufficient balance.");
-//           return;
-//         }
-
-//         // Perform the token transfer
-//         await tokenContract.methods.transfer(recipientAddress, amount).send({ from: userAddress });
-//         setErrorMessage("Tokens transferred successfully.");
-//       } else {
-//         setErrorMessage("Please install Metamask to use this feature.");
-//       }
-//     } catch (error) {
-//       setErrorMessage("An error occurred during the token transfer.");
-//       console.error(error);
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <input
-//         type="text"
-//         placeholder="Recipient's Ethereum Address"
-//         value={recipientAddress}
-//         onChange={(e) => setRecipientAddress(e.target.value)}
-//       />
-//       <input
-//         type="number"
-//         placeholder="Amount"
-//         value={amount}
-//         onChange={(e) => setAmount(e.target.value)}
-//       />
-//       <button onClick={handleTransfer}>Transfer Tokens</button>
-//       {errorMessage && <p>{errorMessage}</p>}
-//     </div>
-//   );
-// };
-
-// export default TransferTokens;
+// 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2 weth
+// 0x6600d262b3c7a6a6c0eede07a6b25927d7288df6 metamask-wallet

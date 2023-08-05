@@ -1,5 +1,5 @@
 export interface IUserData {
-  senderAddress: string;
+  ercContractAddress: string;
   receiverAdress: string;
   amount: number;
 }

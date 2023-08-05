@@ -7,7 +7,18 @@ import ModeSelector from "../modeSelector";
 import ThreeDots from "../threeDots";
 import sun from "../../../assets/sun.svg";
 
-function Header() {
+import { addressShrinker } from "../../../utils/addressShrinker";
+import { Id } from "react-toastify";
+
+function Header({
+  currentWalletAddress,
+  connectWallet,
+  isConnectLoading,
+}: {
+  currentWalletAddress: string;
+  connectWallet: () =>  Promise<Id | undefined>;
+  isConnectLoading: boolean;
+}) {
   return (
     <header className="flex justify-center items-center py-[18.6px]">
       <div>
@@ -53,7 +64,19 @@ function Header() {
         <img src={sun} alt="" className="h-[13px] w-[13px]" />
         <Button title="Buy SPA & USDs" onClick={() => {}} />
         <WalletDropdown />
-        <Button title="Connect wallet" onClick={() => {}} />
+        <Button
+          title={`${
+            currentWalletAddress !== ""
+              ? addressShrinker(currentWalletAddress)
+              : "Connect wallet"
+          }`}
+          onClick={() => {
+            if (!currentWalletAddress) {
+              connectWallet();
+            }
+          }}
+          isLoading={isConnectLoading}
+        />
         <ModeSelector />
         <ThreeDots />
       </div>

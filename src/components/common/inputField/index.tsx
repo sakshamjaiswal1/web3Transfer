@@ -1,4 +1,5 @@
 function InputField({
+  type = "text",
   value,
   label,
   placeHolder,
@@ -7,7 +8,9 @@ function InputField({
   isFullWidth,
   className = "",
   onChange,
+  onFocus,
 }: {
+  type?: "text" | "number";
   label: string;
   placeHolder: string;
   value: string | number;
@@ -16,6 +19,7 @@ function InputField({
   isFullWidth?: boolean;
   className?: string;
   onChange: (val: string) => void;
+  onFocus?: () => void;
 }) {
   return (
     <div className={`${isFullWidth ? "w-full" : ""} ${className}`}>
@@ -33,13 +37,18 @@ function InputField({
 
       <input
         value={value}
-        type="text"
+        type={type}
         placeholder={placeHolder}
         className={`px-[11px] py-[10px] rounded-[12px] border-solid border-[1px] border-[#CCC] mt-[10px] ${
           isFullWidth ? "w-full" : ""
         } placeholder:text:18px placeholder:leading-[18.4px] placeholder:text-[#B2B2B2]`}
         onChange={(event) => {
           onChange(event.target.value);
+        }}
+        onFocus={() => {
+          if (onFocus) {
+            onFocus();
+          }
         }}
       />
     </div>
